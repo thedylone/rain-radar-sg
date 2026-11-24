@@ -1,5 +1,19 @@
 <resources>
-    <style name="AppTheme" parent="android:Theme.DeviceDefault.DayNight">
-        <item name="android:windowLightStatusBar">true</item>
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar" />
+
+    <style name="TimeChip">
+        <item name="android:background">@drawable/pill_bg</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="SectionTitle" parent="TextAppearance.Material3.TitleMedium" />
+    <style name="Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 </resources>

@@ -11,8 +11,10 @@ android {
         applicationId = "dev.rainradar.sg"
         minSdk = 31
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        // CI passes -PversionCode=<run number> so every release can update the previous one.
+        val ci = (project.findProperty("versionCode") as String?)?.toInt()
+        versionCode = ci ?: 1
+        versionName = if (ci != null) "1.0.$ci" else "1.0"
     }
 
     buildTypes {
@@ -36,4 +38,6 @@ android {
 
 dependencies {
     implementation("androidx.work:work-runtime:2.10.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
 }
