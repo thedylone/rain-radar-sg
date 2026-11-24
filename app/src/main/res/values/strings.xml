@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Rain Radar SG</string>
+    <string name="widget_name">Rain areas</string>
+    <string name="widget_desc">Singapore rain radar (NEA / MSS), updated automatically</string>
+    <string name="loading">Loading…</string>
+    <string name="updating">Updating…</string>
+    <string name="offline">Offline</string>
+    <string name="offline_long">Couldn\'t reach weather.gov.sg — tap ↻ to retry</string>
+    <string name="time_latest">%1$s · latest</string>
+    <string name="time_past">%1$s</string>
+    <string name="show_labels">Show town names</string>
+    <string name="refresh_every">Widget refreshes every</string>
+    <string name="add_widget">Add widget to home screen</string>
+    <string name="legend_light">Light</string>
+    <string name="legend_heavy">Heavy</string>
+    <string name="credit">Radar images and map layers © Meteorological Service Singapore (NEA), from weather.gov.sg. This app is not affiliated with NEA. Refresh times may stretch when the phone is idle (Android battery saving); tap ↻ on the widget to update now.</string>
+    <string name="play">Play past hour</string>
+    <string name="reload">Reload</string>
+    <string name="refresh">Refresh</string>
+</resources>
