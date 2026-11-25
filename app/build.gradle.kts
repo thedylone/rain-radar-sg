@@ -49,11 +49,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-    // Robolectric tests need the app's real resources (layouts, styles, drawables).
-    testOptions {
-        unitTests.isIncludeAndroidResources = true
-    }
 }
 
 dependencies {
@@ -62,6 +57,4 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
 
     testImplementation("junit:junit:4.13.2")
-    // Runs Android views on the JVM, for layout tests like MapButtonTest.
-    testImplementation("org.robolectric:robolectric:4.14.1")
 }
