@@ -8,6 +8,8 @@ The map is stacked exactly like the website: NEA's `base-853.png` base map, the 
 - Resizable widget with frame time, tap ↻ to refresh, tap map to open the app
 - Background refresh every 5 / 10 / 15 / 30 minutes (WorkManager)
 - App screen with past-hour playback, intensity legend, town-name toggle
+- Pinch, double-tap or +/− to zoom the map; drag to pan when zoomed
+- "Show my location" toggle (blue dot, foreground only) and a saved pin: long-press the map or tap "Pin my location". The pin can also be drawn on the widget
 
 ## Build
 ```bash

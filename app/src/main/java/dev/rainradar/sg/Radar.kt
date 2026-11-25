@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.PointF
 import android.graphics.RectF
 import java.io.File
 import java.io.IOException
@@ -31,6 +33,17 @@ object Radar {
     private const val LABELS_H = 485
     private const val LABELS_DY = -3
     private const val RADAR_ALPHA = 128 // NEA uses opacity: 0.5
+
+    // Geographic bounds of base-853.png (linear lat/lon <-> pixels). weather.gov.sg's own
+    // calculatePosition() uses Singapore's bounding box (1.4572..1.1450, 103.565..104.130), which
+    // puts points ~1 km off; these were fitted to the drawn coastlines of Jurong Island and
+    // Pulau Ubin and checked against Pulau Bukom, Sentosa, Woodlands and Tuas checkpoints.
+    private const val LAT_TOP = 1.47736
+    private const val LAT_BOTTOM = 1.15393
+    private const val LON_LEFT = 103.55298
+    private const val LON_RIGHT = 104.13499
+    /** Ground distance covered by one map pixel. */
+    const val METERS_PER_PX = (LAT_TOP - LAT_BOTTOM) * 111_320 / MAP_H
 
     private const val HOST = "https://www.weather.gov.sg"
     private const val BASE_URL = "$HOST/wp-content/themes/wiptheme/assets/img/base-853.png"
@@ -79,6 +92,20 @@ object Radar {
         return null
     }
 
+    // --- geography -------------------------------------------------------------------------
+
+    fun onMap(lat: Double, lon: Double) = lat in LAT_BOTTOM..LAT_TOP && lon in LON_LEFT..LON_RIGHT
+
+    /** Lat/lon to map pixels (0..853, 0..479). */
+    fun toMap(lat: Double, lon: Double) = PointF(
+        ((lon - LON_LEFT) / (LON_RIGHT - LON_LEFT) * MAP_W).toFloat(),
+        ((LAT_TOP - lat) / (LAT_TOP - LAT_BOTTOM) * MAP_H).toFloat(),
+    )
+
+    /** Map pixels to lat/lon. */
+    fun toGeo(p: PointF): Pair<Double, Double> =
+        LAT_TOP - p.y / MAP_H * (LAT_TOP - LAT_BOTTOM) to LON_LEFT + p.x / MAP_W * (LON_RIGHT - LON_LEFT)
+
     // --- static layers, cached on disk ---------------------------------------------------
 
     private fun cached(ctx: Context, name: String, url: String): Bitmap? {
@@ -119,11 +146,72 @@ object Radar {
         }
     }
 
-    fun render(base: Bitmap?, radar: Bitmap?, labels: Bitmap?, scale: Float = 1.5f): Bitmap {
+    /** Renders the map stack, with an optional saved [pin] (in map pixels). */
+    fun render(base: Bitmap?, radar: Bitmap?, labels: Bitmap?, pin: PointF? = null, scale: Float = 1.5f): Bitmap {
         val w = (MAP_W * scale).toInt()
         val h = (MAP_H * scale).toInt()
         val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        draw(Canvas(out), RectF(0f, 0f, w.toFloat(), h.toFloat()), base, radar, labels)
+        val c = Canvas(out)
+        draw(c, RectF(0f, 0f, w.toFloat(), h.toFloat()), base, radar, labels)
+        if (pin != null) Markers().pin(c, pin.x * scale, pin.y * scale, h * 0.1f)
         return out
+    }
+}
+
+/** Location markers. Not thread-safe: give each drawing thread its own instance. */
+class Markers {
+    private val fill = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val stroke = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        color = 0xFFFFFFFF.toInt()
+        strokeJoin = Paint.Join.ROUND
+    }
+    private val path = Path()
+    private val tip = Path()
+
+    /** Teardrop pin of height [h] whose point sits at ([x], [y]). */
+    fun pin(c: Canvas, x: Float, y: Float, h: Float) {
+        val r = h * 0.34f
+        val cy = y - h + r
+        path.reset(); tip.reset()
+        path.addCircle(x, cy, r, Path.Direction.CW)
+        // Tangent points from the tip to the head circle.
+        val d = h - r
+        val a = Math.asin((r / d).toDouble())
+        val tx = (r * Math.cos(a)).toFloat()
+        val ty = (r * Math.sin(a)).toFloat()
+        tip.moveTo(x, y)
+        tip.lineTo(x - tx, cy + ty)
+        tip.lineTo(x + tx, cy + ty)
+        tip.close()
+        path.op(tip, Path.Op.UNION)
+
+        fill.color = 0x40000000
+        c.save(); c.translate(0f, h * 0.03f); c.drawPath(path, fill); c.restore() // soft shadow
+        fill.color = PIN
+        c.drawPath(path, fill)
+        stroke.strokeWidth = h * 0.06f
+        c.drawPath(path, stroke)
+        fill.color = 0xFFFFFFFF.toInt()
+        c.drawCircle(x, cy, r * 0.38f, fill)
+    }
+
+    /** Live-location dot of radius [r], with an accuracy halo of radius [accuracy]. */
+    fun dot(c: Canvas, x: Float, y: Float, r: Float, accuracy: Float) {
+        if (accuracy > r * 1.5f) {
+            fill.color = 0x302A7DE1
+            c.drawCircle(x, y, accuracy, fill)
+        }
+        fill.color = 0x50000000
+        c.drawCircle(x, y + r * 0.15f, r * 1.45f, fill)
+        fill.color = 0xFFFFFFFF.toInt()
+        c.drawCircle(x, y, r * 1.4f, fill)
+        fill.color = ME
+        c.drawCircle(x, y, r, fill)
+    }
+
+    private companion object {
+        const val PIN = 0xFFE53935.toInt()
+        const val ME = 0xFF2A7DE1.toInt()
     }
 }

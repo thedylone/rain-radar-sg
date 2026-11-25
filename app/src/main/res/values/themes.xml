@@ -12,6 +12,17 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
+    <!-- Small round button floating over the map. -->
+    <style name="MapButton" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="iconSize">20dp</item>
+        <item name="elevation">2dp</item>
+    </style>
+
     <style name="SectionTitle" parent="TextAppearance.Material3.TitleMedium" />
     <style name="Caption" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
