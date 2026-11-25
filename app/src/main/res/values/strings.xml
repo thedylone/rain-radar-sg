@@ -6,7 +6,7 @@
     <string name="updating">Updating…</string>
     <string name="offline">Offline</string>
     <string name="offline_long">Couldn\'t reach weather.gov.sg</string>
-            <string name="show_labels">Show town names</string>
+    <string name="show_labels">Show town names</string>
     <string name="refresh_every">Widget refreshes every</string>
     <string name="add_widget">Add widget to home screen</string>
     <string name="legend_light">Light</string>
@@ -31,4 +31,22 @@
     <string name="play">Play past hour</string>
     <string name="reload">Reload</string>
     <string name="refresh">Refresh</string>
+    <string name="zoom_in">Zoom in</string>
+    <string name="zoom_out">Zoom out</string>
+    <string name="show_location">Show my location</string>
+    <string name="hide_location">Hide my location</string>
+    <string name="pin_section">Location</string>
+    <string name="pin_none">Long-press the map to drop a pin, or pin where you are</string>
+    <string name="pin_set">Pinned at %1$.4f, %2$.4f · long-press the map to move it</string>
+    <string name="pin_here">Pin my location</string>
+    <string name="pin_remove">Remove</string>
+    <string name="pin_on_widget">Show pin on widget</string>
+    <string name="pin_saved">Pin saved</string>
+    <string name="pin_removed">Pin removed</string>
+    <string name="undo">Undo</string>
+    <string name="locating">Finding your location…</string>
+    <string name="no_fix">Couldn\'t get your location</string>
+    <string name="location_off">Location is turned off on this phone</string>
+    <string name="location_denied">Location permission is needed for this</string>
+    <string name="outside_map">You\'re outside the radar map</string>
 </resources>

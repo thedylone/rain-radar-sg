@@ -8,6 +8,27 @@ object Prefs {
     fun showLabels(ctx: Context) = p(ctx).getBoolean("labels", true)
     fun setShowLabels(ctx: Context, v: Boolean) = p(ctx).edit().putBoolean("labels", v).apply()
 
+    /** Show the live location dot on the app map. */
+    fun showLocation(ctx: Context) = p(ctx).getBoolean("location", false)
+    fun setShowLocation(ctx: Context, v: Boolean) = p(ctx).edit().putBoolean("location", v).apply()
+
+    /** Saved pin as (lat, lon), or null. */
+    fun pin(ctx: Context): Pair<Double, Double>? {
+        val p = p(ctx)
+        if (!p.contains("pinLat")) return null
+        return Double.fromBits(p.getLong("pinLat", 0)) to Double.fromBits(p.getLong("pinLon", 0))
+    }
+
+    fun setPin(ctx: Context, v: Pair<Double, Double>?) {
+        val e = p(ctx).edit()
+        if (v == null) e.remove("pinLat").remove("pinLon")
+        else e.putLong("pinLat", v.first.toRawBits()).putLong("pinLon", v.second.toRawBits())
+        e.apply()
+    }
+
+    fun pinOnWidget(ctx: Context) = p(ctx).getBoolean("pinWidget", true)
+    fun setPinOnWidget(ctx: Context, v: Boolean) = p(ctx).edit().putBoolean("pinWidget", v).apply()
+
     /** Widget refresh interval in minutes. */
     fun interval(ctx: Context) = p(ctx).getInt("interval", 10)
     fun setInterval(ctx: Context, v: Int) = p(ctx).edit().putInt("interval", v).apply()

@@ -38,13 +38,14 @@ object Updater {
         rerender(ctx)
     }
 
-    /** Re-renders the widget image from the stored frame (e.g. after toggling labels). */
+    /** Re-renders the widget image from the stored frame (e.g. after toggling labels or moving the pin). */
     @Synchronized
     fun rerender(ctx: Context) {
         val raw = File(ctx.filesDir, RAW)
         val radar = if (raw.exists()) BitmapFactory.decodeFile(raw.path) else null
         val labels = if (Prefs.showLabels(ctx)) Radar.labels(ctx) else null
-        val img = Radar.render(Radar.baseMap(ctx), radar, labels)
+        val pin = if (Prefs.pinOnWidget(ctx)) Prefs.pin(ctx)?.let { Radar.toMap(it.first, it.second) } else null
+        val img = Radar.render(Radar.baseMap(ctx), radar, labels, pin)
         val out = ByteArrayOutputStream()
         img.compress(Bitmap.CompressFormat.PNG, 100, out)
         Radar.writeAtomic(File(ctx.filesDir, WIDGET_IMG), out.toByteArray())
