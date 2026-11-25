@@ -143,8 +143,9 @@ object Radar {
 
     // --- drawing ---------------------------------------------------------------------------
 
-    private val smooth = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
-    private val radarPaint = Paint().apply { alpha = RADAR_ALPHA } // nearest-neighbour like the site
+    // Lazy so that loading Radar (e.g. in JVM unit tests) doesn't construct Android Paint objects.
+    private val smooth by lazy { Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG) }
+    private val radarPaint by lazy { Paint().apply { alpha = RADAR_ALPHA } } // nearest-neighbour like the site
 
     /** Draws the NEA stack into [dst], which should have the 853:479 aspect ratio. */
     fun draw(c: Canvas, dst: RectF, base: Bitmap?, radar: Bitmap?, labels: Bitmap?) {
