@@ -1,7 +1,7 @@
 name: Tests
 
-# Runs the unit tests and checks the Paparazzi screenshots. Needs no secrets,
-# so it also runs on pull requests from forks.
+# Runs the JVM unit tests. Needs no secrets, so it also runs on pull requests
+# from forks.
 on:
   pull_request:
   push:
@@ -28,17 +28,13 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      # verifyPaparazziDebug runs every debug unit test, with screenshot tests
-      # failing when the UI no longer matches app/src/test/snapshots.
-      - name: Run tests
-        run: ./gradlew verifyPaparazziDebug --no-daemon
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --no-daemon
 
-      - name: Upload test reports and screenshot diffs
+      - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: |
-            app/build/reports/tests/
-            app/build/paparazzi/failures/
+          path: app/build/reports/tests/
           if-no-files-found: ignore

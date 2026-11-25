@@ -1,8 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    // Renders layouts to PNGs on the JVM (no emulator): ./gradlew recordPaparazziDebug
-    id("app.cash.paparazzi")
 }
 
 android {

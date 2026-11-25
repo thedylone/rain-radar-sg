@@ -78,8 +78,11 @@ object Radar {
         }
     }
 
+    /** URL of the radar frame for the 5-minute slot [t] (Singapore time). */
+    fun frameUrl(t: ZonedDateTime): String = FRAME_URL.format(t.format(STAMP))
+
     @Throws(IOException::class)
-    fun fetch(t: ZonedDateTime): Frame? = get(FRAME_URL.format(t.format(STAMP)))?.let { Frame(t, it) }
+    fun fetch(t: ZonedDateTime): Frame? = get(frameUrl(t))?.let { Frame(t, it) }
 
     /** Walks back from now until a published frame is found (frames appear a few minutes late). */
     @Throws(IOException::class)
@@ -96,15 +99,23 @@ object Radar {
 
     fun onMap(lat: Double, lon: Double) = lat in LAT_BOTTOM..LAT_TOP && lon in LON_LEFT..LON_RIGHT
 
+    /** Longitude to map x pixel (0..853). */
+    fun mapX(lon: Double) = ((lon - LON_LEFT) / (LON_RIGHT - LON_LEFT) * MAP_W).toFloat()
+
+    /** Latitude to map y pixel (0..479). */
+    fun mapY(lat: Double) = ((LAT_TOP - lat) / (LAT_TOP - LAT_BOTTOM) * MAP_H).toFloat()
+
+    /** Map x pixel to longitude. */
+    fun lonAt(x: Float) = LON_LEFT + x / MAP_W * (LON_RIGHT - LON_LEFT)
+
+    /** Map y pixel to latitude. */
+    fun latAt(y: Float) = LAT_TOP - y / MAP_H * (LAT_TOP - LAT_BOTTOM)
+
     /** Lat/lon to map pixels (0..853, 0..479). */
-    fun toMap(lat: Double, lon: Double) = PointF(
-        ((lon - LON_LEFT) / (LON_RIGHT - LON_LEFT) * MAP_W).toFloat(),
-        ((LAT_TOP - lat) / (LAT_TOP - LAT_BOTTOM) * MAP_H).toFloat(),
-    )
+    fun toMap(lat: Double, lon: Double) = PointF(mapX(lon), mapY(lat))
 
     /** Map pixels to lat/lon. */
-    fun toGeo(p: PointF): Pair<Double, Double> =
-        LAT_TOP - p.y / MAP_H * (LAT_TOP - LAT_BOTTOM) to LON_LEFT + p.x / MAP_W * (LON_RIGHT - LON_LEFT)
+    fun toGeo(p: PointF): Pair<Double, Double> = latAt(p.y) to lonAt(p.x)
 
     // --- static layers, cached on disk ---------------------------------------------------
 
